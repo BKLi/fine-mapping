@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import sys
 import time
+import math
 
 start = time.clock()
 
@@ -42,6 +43,10 @@ def ldToCaviar(ldFile, sstFile, caviarIn):
                         # check whether pair included in LD file
                         if (int(id1), int(id2)) in ld_dict:
                             ld_value = ldindex[int(id1)][int(id2)]
+                            # print(type(ld_value))
+                            sqrt_ld_value = math.sqrt(ld_value)
+                            print(ld_value)
+                            print(sqrt_ld_value)
 
                             # fill in matrix
                             matrix_listed[idindex][idindex+j] = ld_value
