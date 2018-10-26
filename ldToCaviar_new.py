@@ -42,10 +42,11 @@ def ldToCaviar(ldFile, sstFile, caviarIn):
                         # check whether pair included in LD file
                         if (int(id1), int(id2)) in ld_dict:
                             ld_value = ldindex[int(id1)][int(id2)]
+                            sqrt_ld_value = math.sqrt(ld_value)
 
                             # fill in matrix
-                            matrix_listed[idindex][idindex+j] = ld_value
-                            matrix_listed[idindex+j][idindex] = ld_value
+                            matrix_listed[idindex][idindex + j] = sqrt_ld_value
+                            matrix_listed[idindex + j][idindex] = sqrt_ld_value
                             print("Done: ", id1, id2)
 
             print("Writing File...")

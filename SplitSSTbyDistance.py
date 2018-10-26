@@ -7,7 +7,7 @@ import sys
 
 
 def splitSSTbyDistance(sstFile, distance, chromosome):
-    # input SST should be lifted-over and splitted by chromosome first
+    # input SST should be lifted-over and split by chromosome first
     # forms of SST varies; change import step accordingly
 
     # import sst as dataframe
@@ -26,6 +26,7 @@ def splitSSTbyDistance(sstFile, distance, chromosome):
 
     locus_sizes = []
     for k, sub_sst in grouped_sst:
+        print(sub_sst.head())
         outfile = "{}_sub_set_{}".format(chromosome, str(k+1))
         # print(outfile)
         file = open(outfile, "w+")
@@ -37,5 +38,5 @@ def splitSSTbyDistance(sstFile, distance, chromosome):
     print("average: ", mean(locus_sizes))
 
 
-# splitSSTbyDistance("C:\\Users\libin\Desktop\MDD_chr21.sst", 1000000, "C:\\Users\libin\Desktop\\")
-splitSSTbyDistance(sstFile=sys.argv[1], distance=int(sys.argv[2]), chromosome=sys.argv[3])
+splitSSTbyDistance("C:\\Users\libin\Desktop\MDD_chr21.sst", 1000000, 1)
+# splitSSTbyDistance(sstFile=sys.argv[1], distance=int(sys.argv[2]), chromosome=sys.argv[3])

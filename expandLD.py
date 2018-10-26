@@ -12,9 +12,10 @@ def expand_ld_block(subgroup, ldFile):
     sub_ld_2 = ld[(ld["SNP2"] == IDmin) & (ld["R2"] > 0.6)]
     sub_id.extend(sub_ld_2["SNP1"].tolist())
     print(sub_id)
+    print(len(sub_id))
 
 
-expand_ld_block("C:\\Users\libin\Scripts\\fineMapping\\fine-mapping\\test\\1_sub_set_1",
+expand_ld_block("C:\\Users\libin\Scripts\\fineMapping\\fine-mapping\\test\\1_sub_set_5",
                 "C:\\Users\libin\Desktop\chr21_europe_0.2_1000000.txt")
 
 

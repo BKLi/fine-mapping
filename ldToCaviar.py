@@ -14,6 +14,7 @@ def ldToCaviar(ldFile, sstFile, caviarIn):
     ld_df = pd.DataFrame(ld_df)
     # multi-indexing
     ldindex = ld_df.set_index(["SNP1", "SNP2"])["R2"]
+    print(ldindex)
     # convert to dict for future use
     ld_dict = ldindex.to_dict()
     print("Done: multi-index")
