@@ -3,10 +3,11 @@ import itertools
 import operator
 import numpy as np
 from statistics import mean
+from collections import OrderedDict
 import sys
 
 
-def splitSSTbyDistance(sstFile, distance, ldFile, prefix):
+def SSTtoLDblock(sstFile, distance, ldFile, prefix):
     # input SST should be lifted-over and split by chromosome first
     # forms of SST varies; change import step accordingly
 
@@ -21,17 +22,21 @@ def splitSSTbyDistance(sstFile, distance, ldFile, prefix):
     for k, sub_sst in grouped_sst:
         outfile = "{}_block_{}".format(prefix, str(k + 1))
         file = open(outfile, "w+")
+        ID = sub_sst["BP"].tolist()
+        sub_id = []  # list to store ID of LD-buddies
 
-        Pmin = sub_sst["P"].min()
-        IDmin = int(sub_sst[sub_sst["P"] == Pmin]["BP"])
-        sub_ld_1 = ld[(ld["SNP1"] == IDmin) & (ld["R2"] > 0.6)]
-        sub_id = sub_ld_1["SNP2"].tolist()
-        sub_ld_2 = ld[(ld["SNP2"] == IDmin) & (ld["R2"] > 0.6)]
-        sub_id.extend(sub_ld_2["SNP1"].tolist())
-        for id in sub_id:
-            file.write("{}\n".format(id))
-        # print(sub_id)
-        # print(len(sub_id))
+        for id in ID:
+            sub_id.append(id)
+            sub_ld_1 = ld[(ld["SNP1"] == id) & (ld["R2"] > 0.6)]
+            sub_id.extend(sub_ld_1["SNP2"].tolist())
+            sub_ld_2 = ld[(ld["SNP2"] == id) & (ld["R2"] > 0.6)]
+            sub_id.extend(sub_ld_2["SNP1"].tolist())
+
+        uniq_sub_id = list(OrderedDict.fromkeys(sub_id))
+        uniq_sorted_sub_id = sorted(uniq_sub_id)
+
+        for uid in uniq_sorted_sub_id:
+            file.write("{}\n".format(uid))
 
         # get length of each locus
         locus_sizes.append(sub_sst["BP"].max() - sub_sst["BP"].min())
@@ -40,6 +45,6 @@ def splitSSTbyDistance(sstFile, distance, ldFile, prefix):
     print("average: ", mean(locus_sizes))
 
 
-splitSSTbyDistance("C:\\Users\libin\Desktop\MDD_chr21.sst", 1000000,
-                   "C:\\Users\libin\Desktop\chr21_europe_0.2_1000000.txt", "chr1")
-# splitSSTbyDistance(sstFile=sys.argv[1], distance=int(sys.argv[2]), chromosome=sys.argv[3])
+# SSTtoLDblock("C:\\Users\libin\Desktop\MDD_chr1_filtered.sst", 1000000,
+             # "C:\\Users\libin\Desktop\chr1_europe_0.2_1000000.txt", "chr1")
+SSTtoLDblock(sstFile=sys.argv[1], distance=int(sys.argv[2]), ldFile=sys.argv[3], prefix=sys.argv[4])
