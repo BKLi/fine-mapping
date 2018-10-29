@@ -15,6 +15,10 @@ def SSTtoLDblock(sstFile, distance, ldFile, prefix):
     sst = pd.read_table(sstFile, header=None, sep="\t",
                         names=["CHR", "BP", "SNP", "A1", "A2", "FRQ_A", "FRQ_U", "INFO", "OR", "SE", "P", "report"])
 
+    if sst.shape[0] == 0:
+        print("empty file")
+        sys.exit()
+
     group_ids = (sst["BP"] > (sst["BP"].shift() + distance)).cumsum()
     grouped_sst = sst.groupby(group_ids)
 
@@ -46,5 +50,5 @@ def SSTtoLDblock(sstFile, distance, ldFile, prefix):
 
 
 # SSTtoLDblock("C:\\Users\libin\Desktop\MDD_chr1_filtered.sst", 1000000,
-             # "C:\\Users\libin\Desktop\chr1_europe_0.2_1000000.txt", "chr1")
+# "C:\\Users\libin\Desktop\chr1_europe_0.2_1000000.txt", "chr1")
 SSTtoLDblock(sstFile=sys.argv[1], distance=int(sys.argv[2]), ldFile=sys.argv[3], prefix=sys.argv[4])
