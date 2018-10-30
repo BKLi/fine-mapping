@@ -17,6 +17,9 @@ def ldToFINEMAP(ldFile, fzFile, FINEMAPIn):
         if dim == 0:
             print("empty file")
             sys.exit()
+        if dim == 1:
+            print("only one SNP found")
+            sys.exit()
 
         initial_matrix = np.eye(dim, dtype=int)  # return matrix with 1 on diagnal and 0 elsewhere
         matrix_listed = initial_matrix.tolist()
