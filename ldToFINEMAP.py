@@ -8,23 +8,28 @@ start = time.clock()
 
 def ldToFINEMAP(ldFile, fzFile, FINEMAPIn):
 
-    # read in LD matraix as pandas dataframe
-    ld_df = pd.read_table(ldFile, delim_whitespace=True)
-    ld_df = pd.DataFrame(ld_df)
-    # multi-indexing
-    ldindex = ld_df.set_index(["SNP1", "SNP2"])["R2"]
-    # convert to dict for future use
-    ld_dict = ldindex.to_dict()
-    print("Done: multi-index")
-
     with open(fzFile) as fzfile:
+        # read in zfiles
         # initialize FINEMAP input matrix
         fzfile = fzfile.readlines()[1:]
         dim = len(fzfile)
+        if dim == 0:
+            print("empty file")
+            sys.exit()
+
         initial_matrix = np.eye(dim, dtype=int)  # return matrix with 1 on diagnal and 0 elsewhere
         matrix_listed = initial_matrix.tolist()
         print("dim: ", dim)
         print("Done: Matrix initialization")
+
+        # read in LD matraix as pandas dataframe
+        ld_df = pd.read_table(ldFile, delim_whitespace=True)
+        ld_df = pd.DataFrame(ld_df)
+        # multi-indexing
+        ldindex = ld_df.set_index(["SNP1", "SNP2"])["R2"]
+        # convert to dict for future use
+        ld_dict = ldindex.to_dict()
+        print("Done: multi-index")
 
         with open(FINEMAPIn, "w+") as outfile:
             sidList = []
