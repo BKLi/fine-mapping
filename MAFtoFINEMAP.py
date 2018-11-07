@@ -3,10 +3,12 @@ import math
 import sys
 
 
-def inputFINEMAP(sstFile, MAFfile, FINEMAPinput):
+def inputFINEMAP(sstFile, header,  MAFfile, FINEMAPinput):
 
-    sst = pd.read_table(sstFile, header=None, sep="\t",
-                        names=["CHR", "BP", "SNP", "A1", "A2", "FRQ_A", "FRQ_U", "INFO", "OR", "SE", "P", "report"])
+    header_list = header.split(" ")
+
+    sst = pd.read_table(sstFile, sep="\t")
+    print(sst)
 
     MAF = pd.read_table(MAFfile, sep="\s+")
     # eliminate SNPs missing in MAFfile
@@ -18,8 +20,10 @@ def inputFINEMAP(sstFile, MAFfile, FINEMAPinput):
     reformed = merged[col_to_keep]
     reformed = reformed.rename(columns={"CHR_x": "chromosome", "A1_x": "allele1", "A2_x": "allele2",
                                         "SNP": "rsid", "MAF": "maf", "SE": "se", "BP": "position"})
+    if reformed.shape[0] != 1:
+        reformed.to_csv(FINEMAPinput, sep=" ", index=False)
 
-    reformed.to_csv(FINEMAPinput, sep=" ", index=False)
 
-
-inputFINEMAP(sstFile=sys.argv[1], MAFfile=sys.argv[2], FINEMAPinput=sys.argv[3])
+inputFINEMAP("C:\\Users\\libin\\Desktop\\tmp\\chr1_block_2.sst", header="CHR BP SNP A1 A2 FRQ_A FRQ_U INFO OR SE P",
+             MAFfile="C:\\Users\\libin\\Desktop\\tmp\\MDD_chr1.frq", FINEMAPinput="C:\\Users\\libin\\Desktop\\tmp\\chr1_block_2.zfile")
+# inputFINEMAP(sstFile=sys.argv[1], header=sys.argv[2], MAFfile=sys.argv[3], FINEMAPinput=sys.argv[4])
