@@ -6,16 +6,30 @@ from statistics import mean
 from collections import OrderedDict
 import sys
 
+'''
+take in after-filtering chromosome wide sst files, group SNPs into blocks by distance.
+output block-wide sst files as input for MAFtoFINEMAP.py
+
+'''
+# def SSTtoLDblock(sstFile, header, distance, ldFile, prefix):
+# input SST should be lifted-over and split by chromosome first
+# forms of SST varies; change import step accordingly
+
 
 def SSTtoLDblock(sstFile, header, distance, ldFile, prefix):
-    # input SST should be lifted-over and split by chromosome first
-    # forms of SST varies; change import step accordingly
 
+    # header = "CHR BP SNP A1 A2 FRQ_A FRQ_U INFO OR SE P"
+    # distance = 1000000
+    # prefix = "MDD"
+    # sstFile = "C:\\Users\\libin\\Desktop\\tmp\\MDD_chr22_filtered.sst"
+    # ldFile = "C:\\Users\libin\Desktop\\tmp\\chr22_all_pop.ld"
     header_list = header.split(" ")
     ld = pd.read_table(ldFile, delim_whitespace=True)
+    # print(ld.head())
     sst = pd.read_table(sstFile, header=None, sep="\t",
                         names=header_list)
 
+    # in case some chromosomes do not contain index SNPs
     if sst.shape[0] == 0:
         print("empty file")
         sys.exit(0)
@@ -35,10 +49,10 @@ def SSTtoLDblock(sstFile, header, distance, ldFile, prefix):
 
         for id in ID:
             sub_id.append(id)
-            sub_ld_1 = ld[(ld["SNP1"] == id) & (ld["R2"] > 0.6)]
-            sub_id.extend(sub_ld_1["SNP2"].tolist())
-            sub_ld_2 = ld[(ld["SNP2"] == id) & (ld["R2"] > 0.6)]
-            sub_id.extend(sub_ld_2["SNP1"].tolist())
+            sub_ld_1 = ld[(ld["BP_A"] == id) & (ld["R2"] > 0.6)]
+            sub_id.extend(sub_ld_1["BP_B"].tolist())
+            sub_ld_2 = ld[(ld["BP_B"] == id) & (ld["R2"] > 0.6)]
+            sub_id.extend(sub_ld_2["BP_A"].tolist())
 
         uniq_sub_id = list(OrderedDict.fromkeys(sub_id))
         uniq_sorted_sub_id = sorted(uniq_sub_id)
@@ -46,7 +60,7 @@ def SSTtoLDblock(sstFile, header, distance, ldFile, prefix):
         # intersect each LD block with sst
         uid_df = pd.DataFrame({"BP": uniq_sorted_sub_id})
         merged = pd.merge(uid_df, sst, how='inner', on=["BP"])
-        print(merged.head())
+        # print(merged.head())
         # print(merged.shape[0])
         # file.write("{}\n".format(uid))
         merged.to_csv(outfile, sep="\t", index=False)
@@ -58,6 +72,6 @@ def SSTtoLDblock(sstFile, header, distance, ldFile, prefix):
     print("average: ", mean(locus_sizes))
 
 
-SSTtoLDblock("C:\\Users\\libin\\Desktop\\tmp\\MDD_chr1_filtered.sst", "CHR BP SNP A1 A2 FRQ_A FRQ_U INFO OR SE P",
-             1000000, "C:\\Users\\libin\\Desktop\\tmp\\chr1_europe_0.2_1000000.txt", "chr1")
-# SSTtoLDblock(sstFile=sys.argv[1], distance=int(sys.argv[2]), ldFile=sys.argv[3], prefix=sys.argv[4])
+# SSTtoLDblock("C:\\Users\\libin\\Desktop\\tmp\\MDD_chr1_filtered.sst", "CHR BP SNP A1 A2 FRQ_A FRQ_U INFO OR SE P",
+# 1000000, "C:\\Users\\libin\\Desktop\\tmp\\chr1_europe_0.2_1000000.txt", "chr1")
+SSTtoLDblock(sstFile=sys.argv[1], header=sys.argv[2], distance=int(sys.argv[3]), ldFile=sys.argv[4], prefix=sys.argv[5])

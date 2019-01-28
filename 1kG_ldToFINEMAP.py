@@ -41,13 +41,14 @@ def ldToFINEMAP(ld_file_folder, z_file_folder, output_folder):
         print("Done: Matrix initialization")
 
         # read in LD matraix as pandas dataframe
-        ldFile = ld_file_folder + "{}_europe_0.2_1000000.txt".format(chromosome)
+        # ldFile = ld_file_folder + "{}_europe_0.2_1000000.txt".format(chromosome)
+        ldFile = ld_file_folder + "{}_all_pop.ld".format(chromosome)
         # print(ldFile)
 
         ld_df = pd.read_table(ldFile, delim_whitespace=True)
         ld_df = pd.DataFrame(ld_df)
         # multi-indexing
-        ldindex = ld_df.set_index(["SNP1", "SNP2"])["R2"]
+        ldindex = ld_df.set_index(["BP_A", "BP_B"])["R2"]
         # convert to dict for future use
         ld_dict = ldindex.to_dict()
         print("Done: multi-index")
@@ -58,7 +59,7 @@ def ldToFINEMAP(ld_file_folder, z_file_folder, output_folder):
             # list of SNPs in fz, in terms of BP position(not ID)
             for id1 in sidList:
                 # check if SNP exists in first column of LD file
-                if int(id1) in set(ld_df["SNP1"].tolist()):
+                if int(id1) in set(ld_df["BP_A"].tolist()):
                     idindex = sidList.index(id1)
                     for j in range(1, dim - idindex):
                         # iterate all the SNPs below SNP1 in sst file

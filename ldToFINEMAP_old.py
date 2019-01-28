@@ -1,36 +1,22 @@
 import numpy as np
 import pandas as pd
-import sys, os
-import glob
-import re
+import sys
 import time
 import math
 
 start = time.clock()
 
 
-def ldToFINEMAP(ld_file_folder, z_file_folder, output_folder):
+def ldToFINEMAP(ldFile, zFile, FINEMAPIn):
 
-    # ld_file_folder = "C:\\Users\libin\Desktop\\tmp\\"
-    # z_file_folder = "C:\\Users\libin\Desktop\\tmp\\"
-    # output_folder = "C:\\Users\libin\Desktop\\tmp\\"
-
-    list_of_zfile = glob.glob(z_file_folder + "*.z")
-    print(list_of_zfile)
-    for z in list_of_zfile:
-
-        filename = "".join(os.path.split(z)[-1])[:-2]
-        chromosome = re.findall(r"(chr\d+)_.+", filename)[0]
-        print(filename, chromosome)
+    with open(zFile) as fzfile:
         # read in zfiles
-        fzfile = pd.read_table(z, delim_whitespace=True)
-
-        sidList = fzfile["position"].tolist()
-        print(sidList)
-        print(fzfile)
-
         # initialize FINEMAP input matrix
-        dim = fzfile.shape[0]
+        fzfile = fzfile.readlines()[1:]
+        dim = len(fzfile)
+        if dim == 0:
+            print("empty file")
+            sys.exit(0)
         if dim == 1:
             print("only one SNP found")
             sys.exit(0)
@@ -41,9 +27,6 @@ def ldToFINEMAP(ld_file_folder, z_file_folder, output_folder):
         print("Done: Matrix initialization")
 
         # read in LD matraix as pandas dataframe
-        ldFile = ld_file_folder + "{}_europe_0.2_1000000.txt".format(chromosome)
-        # print(ldFile)
-
         ld_df = pd.read_table(ldFile, delim_whitespace=True)
         ld_df = pd.DataFrame(ld_df)
         # multi-indexing
@@ -52,10 +35,13 @@ def ldToFINEMAP(ld_file_folder, z_file_folder, output_folder):
         ld_dict = ldindex.to_dict()
         print("Done: multi-index")
 
-        FINEMAPin = output_folder + "{}.ld".format(filename)
-        with open(FINEMAPin, "w+") as outfile:
-
+        with open(FINEMAPIn, "w+") as outfile:
+            sidList = []
             # list of SNPs in fz, in terms of BP position(not ID)
+            for fz in fzfile:
+                s = fz.strip().split()
+                sid = s[2]
+                sidList.append(sid)
             for id1 in sidList:
                 # check if SNP exists in first column of LD file
                 if int(id1) in set(ld_df["SNP1"].tolist()):
@@ -82,5 +68,5 @@ def ldToFINEMAP(ld_file_folder, z_file_folder, output_folder):
     print(end - start)
 
 
-ldToFINEMAP(ld_file_folder=sys.argv[1], z_file_folder=sys.argv[2], output_folder=sys.argv[3])
+ldToFINEMAP(ldFile=sys.argv[1], fzFile=sys.argv[2], FINEMAPIn=sys.argv[3])
 
