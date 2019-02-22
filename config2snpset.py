@@ -1,18 +1,18 @@
+"""
+Final step of pipeline. Extracts credible set from config file (FINEMAP output), intersecting with summary statistics
+to grep complete information. Output one file for each block.
+"""
+
 import pandas as pd
 import glob
 import os
 import sys
 
-'''
-Extract credible set from config file (FINEMAP output) and intersect with sst file to grep full info
-'''
 
-pd.set_option('display.max_columns', 500)
-
-
+# pd.set_option('display.max_columns', 500)
 def extract_snp(config_folder, sst_folder):
-# config_folder = "C:\\Users\libin\Scripts\\fineMapping\\fine-mapping\\test\\"
-# sst_folder = "C:\\Users\libin\Scripts\\fineMapping\\fine-mapping\\test\\"
+    # config_folder = "C:\\Users\libin\Scripts\\fineMapping\\fine-mapping\\test\\"
+    # sst_folder = "C:\\Users\libin\Scripts\\fineMapping\\fine-mapping\\test\\"
     list_of_config = glob.glob(config_folder + "*.config")
     for config_file in list_of_config:
         filename = "".join(os.path.split(config_file)[-1][:-7])

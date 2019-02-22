@@ -1,3 +1,7 @@
+"""
+Step3 of the pipeline. Write ld matrix files (one for each block)
+"""
+
 import numpy as np
 import pandas as pd
 import sys, os
@@ -16,18 +20,17 @@ def ldToFINEMAP(ld_file_folder, z_file_folder, output_folder):
     # output_folder = "C:\\Users\libin\Desktop\\tmp\\"
 
     list_of_zfile = glob.glob(z_file_folder + "*.z")
-    print(list_of_zfile)
-    for z in list_of_zfile:
+    print("number of blocks: ", len(list_of_zfile))
 
+    for z in list_of_zfile:
         filename = "".join(os.path.split(z)[-1])[:-2]
         chromosome = re.findall(r"(chr\d+)_.+", filename)[0]
         print(filename, chromosome)
         # read in zfiles
         fzfile = pd.read_table(z, delim_whitespace=True)
-
         sidList = fzfile["position"].tolist()
-        print(sidList)
-        print(fzfile)
+        # print(sidList)
+        print('read in: ', z)
 
         # initialize FINEMAP input matrix
         dim = fzfile.shape[0]
