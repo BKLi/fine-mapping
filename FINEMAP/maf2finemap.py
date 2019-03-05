@@ -15,6 +15,8 @@ import re
 
 def inputfinemap(sstFolder, mafFolder, maf_prefix, FINEMAPinputFolder, chromosome):
 
+    chromosome = "chr" + chromosome
+
     # FINEMAPinputFolder = "C:\\Users\\libin\\Desktop\\tmp\\"
     # sstFolder = "C:\\Users\\libin\\Desktop\\tmp\\"
     # MAFfileFolder = "C:\\Users\\libin\\Desktop\\tmp\\"
