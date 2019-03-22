@@ -2,22 +2,25 @@
 Step one of pipeline.
 Takes in chromosome-wide summary statistics containing significant SNPs, groups SNPs into blocks by distance,
 then includes LD buddies of each SNP in each group.
-Outputs block-wide summary statistics as input for MAFtoFINEMAP.py
+Outputs block-wide summary statistics as input for maf2finemap.py
 
 """
 
 import sys
-import json
+# import json
 import pandas as pd
+import numpy as np
 from statistics import mean
 from collections import OrderedDict
 
 
-def sst2blocksst(filt_sst, chr_sst, header, distance, ldFile, prefix):
+def sst2blocksst(filt_sst, chr_sst, header, distance, ldFile, prefix, cutoff):
     # input SST should be lifted-over and split by chromosome first
     # forms of SST varies; change import step accordingly
-
-    # header : header of sst file
+    # prefix:usually chromosome identifier
+    # cutoff: LD expanding cutoff
+    # header : string, header of sst file
+    cutoff = int(cutoff)
     header_list = header.split(" ")
     ld = pd.read_table(ldFile, delim_whitespace=True)
     sst = pd.read_table(filt_sst, header=None, sep="\t",
@@ -39,30 +42,31 @@ def sst2blocksst(filt_sst, chr_sst, header, distance, ldFile, prefix):
 
         outfile = "{}_block_{}.sst".format(prefix, str(k + 1))
         # file = open(outfile, "w+")
-        ID = sub_sst["BP"].tolist()
-        sub_id = []  # list to store ID of LD-buddies
+        position = sub_sst["BP"].tolist()
 
-        for id in ID:
+        sub_id = []  # list to store position of LD-buddies
+
+        for id in position:
+            # id may be snp1 or snp2 in LD matrix file
             sub_id.append(id)
-            sub_ld_1 = ld[(ld["SNP1"] == id) & (ld["R2"] > 0.6)]
+            sub_ld_1 = ld[(ld["SNP1"] == id) & (ld["R2"] > cutoff)]
             sub_id.extend(sub_ld_1["SNP2"].tolist())
-            sub_ld_2 = ld[(ld["SNP2"] == id) & (ld["R2"] > 0.6)]
+            sub_ld_2 = ld[(ld["SNP2"] == id) & (ld["R2"] > cutoff)]
             sub_id.extend(sub_ld_2["SNP1"].tolist())
-
+        # remove duplicates from list
         uniq_sub_id = list(OrderedDict.fromkeys(sub_id))
         uniq_sorted_sub_id = sorted(uniq_sub_id)
 
         # intersect each LD block with sst
         uid_df = pd.DataFrame({"BP": uniq_sorted_sub_id})
         merged = pd.merge(uid_df, chr_sst, how='inner', on=["BP"])
-        print(merged.head())
-        # print(merged.shape[0])
+        # print(merged.head())
+        print("number of SNPs: ", merged.shape[0])
         # file.write("{}\n".format(uid))
         merged.to_csv(outfile, sep="\t", index=False)
 
         # get length of each locus
         locus_sizes.append(sub_sst["BP"].max() - sub_sst["BP"].min())
-
     print(locus_sizes)
     print("average: ", mean(locus_sizes))
 
