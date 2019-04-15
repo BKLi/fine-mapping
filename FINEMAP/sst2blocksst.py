@@ -66,7 +66,7 @@ def sst2blocksst(filt_sst, chr_sst, header, distance, ldFile, prefix, cutoff):
         merged.to_csv(outfile, sep="\t", index=False)
 
         # get length of each locus
-        locus_sizes.append(sub_sst["BP"].max() - sub_sst["BP"].min())
+        locus_sizes.append(merged["BP"].max() - merged["BP"].min())
     print(locus_sizes)
     print("average: ", mean(locus_sizes))
 

@@ -20,7 +20,7 @@ def ld2finemap(ld_file_folder, z_file_folder, output_folder, chromosome):
     # output_folder = "C:\\Users\libin\Desktop\\tmp\\"
 
     chromosome = "chr" + chromosome
-    list_of_zfile = glob.glob(z_file_folder + "{}*.z".format(chromosome))
+    list_of_zfile = glob.glob(z_file_folder + "{}_*.z".format(chromosome))
     print("number of blocks: ", len(list_of_zfile))
 
     for z in list_of_zfile:
@@ -28,7 +28,7 @@ def ld2finemap(ld_file_folder, z_file_folder, output_folder, chromosome):
         # chromosome = re.findall(r"(chr\d+)_.+", filename)[0]
         # print(filename, chromosome)
         # read in zfiles
-        fzfile = pd.read_table(z, delim_whitespace=True)
+        fzfile = pd.read_csv(z, delim_whitespace=True)
         sidList = fzfile["position"].tolist()
         # print(sidList)
         print('read in: ', z)
@@ -83,5 +83,5 @@ def ld2finemap(ld_file_folder, z_file_folder, output_folder, chromosome):
     print(end - start)
 
 
-ld2finemap(ld_file_folder=sys.argv[1], z_file_folder=sys.argv[2], output_folder=sys.argv[3])
+ld2finemap(ld_file_folder=sys.argv[1], z_file_folder=sys.argv[2], output_folder=sys.argv[3], chromosome=sys.argv[4])
 
