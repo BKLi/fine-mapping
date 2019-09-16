@@ -28,10 +28,8 @@ def extract_snp(config_folder, sst_folder):
         # record the number of SNPs in top configuration
         snp_count = len(snp_list)
         print(snp_count)
-        prob_value = config.head(1)["prob"]
-        print(prob_value)
-        stat = "{}\t{}".format(str(snp_count), str(prob_value))
-        stat_list.append(stat)
+        # prob_value = config.head(1)["prob"]
+        # print(prob_value)
         prob = config.head(1)["prob"].tolist()
         prob_list = prob*len(snp_list)
         pre_merge = pd.DataFrame()
@@ -47,8 +45,12 @@ def extract_snp(config_folder, sst_folder):
         # print(merged)
         credible_set = "{}{}-{}.set".format(config_folder, filename, str(prob))
         merged.to_csv(credible_set, sep="\t", index=False)
+
+        prob_str = "".join(str(i) for i in prob)
+        stat = "{}\t{}".format(str(snp_count), str(prob_str))
+        stat_list.append(stat)
     for s in stat_list:
-        stat_file.write(s)
+        stat_file.write("{}\n".format(s))
 
     # os.system("grep -f {} {} > {}".format(credible_set, sst_file, set_file))
 

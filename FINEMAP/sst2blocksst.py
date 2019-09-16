@@ -37,9 +37,7 @@ def sst2blocksst(filt_sst, chr_sst, header, distance, ldFile, prefix, cutoff):
 
     locus_sizes = []
     for k, sub_sst in grouped_sst:
-
         # print(sub_sst.shape[0])
-
         outfile = "{}_block_{}.sst".format(prefix, str(k + 1))
         # file = open(outfile, "w+")
         position = sub_sst["BP"].tolist()

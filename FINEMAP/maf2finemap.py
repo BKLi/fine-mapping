@@ -87,7 +87,7 @@ def inputfinemap(sstFolder, mafFolder, maf_prefix, FINEMAPinputFolder, chromosom
         # create z files
         finemap_input = FINEMAPinputFolder + sst_name[:-4] + ".z"
         # print(finemap_input)
-
+        reformed = reformed[reformed["maf"] != 0]
         if reformed.empty:
             # when SNPs in block do not exist in 1000G freq files
             # not tested yet
@@ -103,7 +103,6 @@ def inputfinemap(sstFolder, mafFolder, maf_prefix, FINEMAPinputFolder, chromosom
             double_snps.append(reformed_set.iloc[1].values.tolist())
         elif reformed.shape[0] > 2:
             # write zfile
-            reformed = reformed[reformed["maf"] != 0]
             reformed.to_csv(finemap_input, sep=" ", index=False)
 
     with open(FINEMAPinputFolder + "missed_snps_{}.set".format(chromosome), "w+") as outfile:
